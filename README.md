@@ -1,0 +1,2 @@
+# Control_Torneo_Deportivo
+ El proyecto consiste en una aplicación en ambiente web (Backend) la cual consiste, en poder llevar el control de un Torneo Deportivo únicamente Ligas. Todo lo que se le pedirá debe trabajarse con Nodejs y MongoDB, debe utilizar para la seguridad del usuario Tokens para poder verificar sus datos. De ahí en más usted es libre de utilizar cualquier otro framework o librería que usted desee utilizar.
