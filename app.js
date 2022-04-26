@@ -1,18 +1,18 @@
- //Variables globales
- const express = require("express");
- const app = express();
- const bodyParser = require("body-parser");
- const cors = require("cors")
- const morgan = require("morgan")
+const express = require('express');
+const cors = require('cors');
+const app = express();
 
- //Cabeceras
- app.use(cors());
+// IMPORTACION RUTAS
+const usuarioRoutes = require('./src/routes/usuario.routes');
 
+// MIDDLEWARES
+app.use(express.urlencoded({ extended: false}));
+app.use(express.json());
 
- //Middlewares
- app.use(bodyParser.urlencoded({ extended: false }));
- app.use(bodyParser.json());
- app.use(morgan("dev"));
+// CABECERAS
+app.use(cors());
 
- //Exportar 
- module.exports = app;
+// CARGA DE RUTAS localhost:3000/api
+app.use('/api', usuarioRoutes);
+
+module.exports = app;

@@ -1,6 +1,8 @@
 const Usuario = require("../models/usuario.model")
 const bcrypt = require("bcrypt-nodejs");
 const jwt = require("jwt-simple");
+const jwt2 = require('../services/jwt');
+
 
 //Función de registro
 function registro(req, res) {
@@ -44,6 +46,40 @@ function registro(req, res) {
     }
 }
 
+
+//Funcion Login
+
+function login(req, res) {
+    var parametros = req.body;
+    // BUSCAMOS EL CORREO
+    Usuario.findOne({ email : parametros.email }, (err, usuarioEncontrado) => {
+        if(err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+        if (usuarioEncontrado){
+            // COMPARAMOS CONTRASENA SIN ENCRIPTAR CON LA ENCRIPTADA
+            bcrypt.compare(parametros.password, usuarioEncontrado.password, 
+                (err, verificacionPassword) => {//TRUE OR FALSE
+                    if (verificacionPassword) {
+                        if(parametros.obtenerToken == 'true'){
+                            return res.status(200)
+                                .send({ token: jwt2.crearToken(usuarioEncontrado) })
+                        } else {
+                            usuarioEncontrado.password = undefined;
+
+                            return res.status(200)
+                                .send({ usuario: usuarioEncontrado })
+                        }                       
+                    } else {
+                        return res.status(500)
+                            .send({ mensaje: 'La contrasena no coincide.'})
+                    }
+                })
+        } else {
+            return res.status(500)
+                .send({ mensaje: 'El usuario, no se ha podido identificar'})
+        }
+    })
+}
+
 //Función para editar el usuario
 function editarRegistro(req, res) {
     var idUsuario = req.params.idUsuario;
@@ -79,9 +115,9 @@ function editarUsuarioAdmin(req, res) {
 
 function convertirAdmin(req, res) {
     var iduser = req.params.idUsuario;
-    var founduser = await Usuario.findOne({ _id: iduser });
+    var founduser = Usuario.findOne({ _id: iduser });
     if (founduser.rol === "Admin_App") {
-        return res.status(400).json({ error: "User is already an admin" })
+        return res.status(400).json({ error: "El usuario ya es Administrador" })
     }
 
     Usuario.findByIdAndUpdate(iduser, { rol: "Admin_App" })
@@ -147,6 +183,7 @@ function obtenerTodosLosUsuariosClientes(req, res) {
 
 module.exports = {
     registro,
+    login,
     editarRegistro,
     editarUsuarioAdmin,
     eliminarRegistro,
