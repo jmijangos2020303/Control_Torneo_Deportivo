@@ -23,3 +23,13 @@ exports.ensureAuth = function (req, res, next) {
     req.user = payload;
     next();
 }
+
+exports.ensureAuthAdmin = (req, res, next)=>{
+    var payload = req.user;
+        
+    if(payload.rol != 'ADMIN'){
+        return res.status(404).send({message: 'No tienes permiso para ingresar a esta ruta'})
+    }else{
+       return next(); 
+    }
+}

@@ -6,7 +6,8 @@ var UsuarioSchema = Schema({
     usuario: String,
     email: String,
     password: String,
-    rol: String
+    rol: String,
+    torneo: [{type: mongoose.ObjectId, ref: 'torneo'}]
 }, {collection: 'usuario'})
 
 module.exports = mongoose.model('usuario', UsuarioSchema);
