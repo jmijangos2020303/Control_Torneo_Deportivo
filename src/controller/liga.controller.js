@@ -3,6 +3,7 @@ const Equipo = require("../models/equipo.model")
 const Tabla = require("../models/tabla.model");
 const pdfGenerador = require('../utils/pdf/pdf.generator')
 const pdfTablaLiga = require('../utils/pdf/reporteTablaLiga.generator')
+const Usuario = require("../models/usuario.model")
 
 
 // Create Liga
@@ -10,20 +11,20 @@ function createLiga(req, res) {
     var modeloliga = new Liga();
     var params = req.body;
 
-    if (params.nombre) {
-        modeloliga.nombre = params.nombre;
+    if (params.nombreL) {
+        modeloliga.nombreL = params.nombreL;
         modeloliga.image = params.image;
-        modeloliga.creador = req.user.sub;
+        modeloliga.creador = req.user.nombre;
 
         Liga.find({
             $or: [
-                { nombre: modeloliga.nombre },
+                { nombreL: modeloliga.nombreL },
                 { image: modeloliga.image }
             ]
         }).exec((err, ligaEncontrada) => {
             if (err) {
                 return res.status(500).send({ mensaje: "Error en la petición" })
-            } if (ligaEncontrada.length == ligaEncontrada) {
+            } if (ligaEncontrada && ligaEncontrada.length >= 1) {
                 return res.status(500).send({ mensaje: "Liga Existente!" })
             } else {
                 modeloliga.save((err, ligaSave) => {
@@ -45,14 +46,14 @@ function createLigaAdmin(req, res) {
     var modeloliga = new Liga();
     var params = req.body;
 
-    if (params.nombre) {
-        modeloliga.nombre = params.nombre;
+    if (params.nombreL) {
+        modeloliga.nombreL = params.nombreL;
         modeloliga.image = params.image;
         modeloliga.creador = params.creador;
 
         Liga.find({
             $or: [
-                { nombre: modeloliga.nombre },
+                { nombreL: modeloliga.nombreL },
                 { image: modeloliga.image }
             ]
         }).exec((err, ligaEncontrada) => {
@@ -77,7 +78,7 @@ function createLigaAdmin(req, res) {
 
 //mostrar ligas
 function mostrarLigas(req, res) {
-    Liga.find().populate('', 'nombre email').exec((err, ligas) => {
+    Liga.find().populate('', 'nombreL email').exec((err, ligas) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!ligas) {
@@ -93,7 +94,7 @@ function ligasForUser(req, res) {
     // if (req.user.rol === "Admin_App") {
     var idUsuario = req.params.idUsuario;
 
-    Liga.find({ creador: idUsuario }).populate('creador', 'nombre email').exec((err, ligasUser) => {
+    Liga.find({ creador: idUsuario }).populate('creador', 'nombreL email').exec((err, ligasUser) => {
             if (err) {
                 return res.status(500).send({ mensaje: "Error en la petición" })
             } else if (!ligasUser) {
@@ -109,7 +110,7 @@ function ligasForUser(req, res) {
 
 //Mostrar mis ligas (del usuario que este logeado)
 function misLigas(req, res) {
-    Liga.find({ creador: req.user.sub }).populate('creador', 'nombre email').exec((err, misLigas) => {
+    Liga.find({ creador: req.user.sub }).populate('creador', 'nombreL email').exec((err, misLigas) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!misLigas) {
@@ -124,7 +125,7 @@ function misLigas(req, res) {
 function mostrarLigaID(req, res) {
     var idLiga = req.params.idLiga;
 
-    Liga.findById(idLiga).populate('creador', 'nombre email').exec((err, liga) => {
+    Liga.findById(idLiga).populate('creador', 'nombreL email').exec((err, liga) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!liga) {
@@ -139,7 +140,7 @@ function mostrarLigaID(req, res) {
 function equiposLiga(req, res) {
     var idLiga = req.params.idLiga;
 
-    Equipo.find({ liga: idLiga }).populate('liga', 'nombre').exec((err, equipos) => {
+    Equipo.find({ liga: idLiga }).populate('liga', 'nombreL').exec((err, equipos) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!equipos) {
@@ -154,7 +155,7 @@ function equiposLiga(req, res) {
 function tablaLiga(req, res) {
     var idLiga = req.params.idLiga;
     var Equipos = Equipo.find({ liga: idLiga })
-    Tabla.find({ equipo: Equipos }).populate('equipo', 'nombre').exec((err, tabla) => {
+    Tabla.find({ equipo: Equipos }).populate('equipo', 'nombreL').exec((err, tabla) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!tabla) {

@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var LigaSchema = Schema({
-    nombre: String,
+    nombreL: String,
     image: String,
-    creador: {type:Schema.Types.ObjectId, ref: 'usuario'}
+    creador: {type:Schema.Types.String, ref: 'usuario'}
 });
  
 module.exports = mongoose.model('liga', LigaSchema);
