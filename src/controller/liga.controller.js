@@ -16,17 +16,10 @@ function createLiga(req, res) {
         modeloliga.image = params.image;
         modeloliga.creador = req.user.nombre;
 
-        Liga.find({
-            $or: [
-                { nombreL: modeloliga.nombreL },
-                { image: modeloliga.image }
-            ]
-        }).exec((err, ligaEncontrada) => {
+        Liga.find({nombreL: params.nombreL}, (err, catEncontrado)=> {
             if (err) {
                 return res.status(500).send({ mensaje: "Error en la petición" })
-            } if (ligaEncontrada && ligaEncontrada.length >= 1) {
-                return res.status(500).send({ mensaje: "Liga Existente!" })
-            } else {
+            }else if (catEncontrado.length == 0) {
                 modeloliga.save((err, ligaSave) => {
                     if (err) {
                         return res.status(500).send({ mensaje: "Error en la petición" })
@@ -36,45 +29,17 @@ function createLiga(req, res) {
                         return res.status(200).send({ ligaSave })
                     }
                 })
-            }
-        })
-    }
-}
-
-
-function createLigaAdmin(req, res) {
-    var modeloliga = new Liga();
-    var params = req.body;
-
-    if (params.nombreL) {
-        modeloliga.nombreL = params.nombreL;
-        modeloliga.image = params.image;
-        modeloliga.creador = params.creador;
-
-        Liga.find({
-            $or: [
-                { nombreL: modeloliga.nombreL },
-                { image: modeloliga.image }
-            ]
-        }).exec((err, ligaEncontrada) => {
-            if (err) {
-                return res.status(500).send({ mensaje: "Error en la petición" })
-            } else if (ligaEncontrada && ligaEncontrada.length >= 1) {
-                return res.status(500).send({ mensaje: "Liga Existente!" })
             } else {
-                modeloliga.save((err, ligaSave) => {
-                    if (err) {
-                        return res.status(500).send({ mensaje: "Error en la petición" })
-                    } else if (!ligaSave) {
-                        return res.status(500).send({ mensaje: "No se ha podido guardar la liga" })
-                    } else {
-                        return res.status(200).send({ ligaSave })
-                    }
-                })
+                return res.status(500)
+                        .send({ mensaje: 'Esta Liga ya existe en la Base de Datos ' });
             }
         })
+    }else{
+        return res.status(500).send({ mensaje: "No ha completado todos los parámetros" })
     }
 }
+
+
 
 //mostrar ligas
 function mostrarLigas(req, res) {
@@ -92,9 +57,9 @@ function mostrarLigas(req, res) {
 //Mostrar ligas por el id de usuario
 function ligasForUser(req, res) {
     // if (req.user.rol === "Admin_App") {
-    var idUsuario = req.params.idUsuario;
+    var nombre = req.params.nombre;
 
-    Liga.find({ creador: idUsuario }).populate('creador', 'nombreL email').exec((err, ligasUser) => {
+    Liga.find({ creador: nombre }, (err, ligasUser) => {
             if (err) {
                 return res.status(500).send({ mensaje: "Error en la petición" })
             } else if (!ligasUser) {
@@ -110,13 +75,13 @@ function ligasForUser(req, res) {
 
 //Mostrar mis ligas (del usuario que este logeado)
 function misLigas(req, res) {
-    Liga.find({ creador: req.user.sub }).populate('creador', 'nombreL email').exec((err, misLigas) => {
+    Liga.find({creador: req.user.nombre}, (err, catEncontrado)=> {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
-        } else if (!misLigas) {
+        } else if (!catEncontrado) {
             return res.status(500).send({ mensaje: "No se han podido obtener las ligas" })
         } else {
-            return res.status(200).send({ misLigas })
+            return res.status(200).send({ catEncontrado })
         }
     })
 }
@@ -125,7 +90,7 @@ function misLigas(req, res) {
 function mostrarLigaID(req, res) {
     var idLiga = req.params.idLiga;
 
-    Liga.findById(idLiga).populate('creador', 'nombreL email').exec((err, liga) => {
+    Liga.findById(idLiga, (err, liga) => {
         if (err) {
             return res.status(500).send({ mensaje: "Error en la petición" })
         } else if (!liga) {
@@ -254,7 +219,6 @@ function generadorTablaLiga(req, res) {
 
 module.exports = {
     createLiga,
-    createLigaAdmin,
     mostrarLigas,
     misLigas,
     ligasForUser,

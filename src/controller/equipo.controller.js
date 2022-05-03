@@ -9,9 +9,8 @@ async function createEquipo(req, res) {
     var modeloTabla = new Tabla();
     var params = req.body;
     var ligaID = req.params.idLiga;
-    var cupoLiga = await Equipo.find({ liga: params.liga })
 
-    if (cupoLiga.length >= 10) {
+    if (catEncontrado.length >= 10) {
         return res.status(500).send({ mensaje: "La liga ha alcanzado el total de equipos" })
     } else {
         if (params.nombre) {
@@ -50,7 +49,7 @@ async function createEquipo(req, res) {
                         }
                     })} else {
                         return res.status(500)
-                        .send({ mensaje: 'Este producto ya existe en la base de datos ' });
+                        .send({ mensaje: 'Este Equipo ya existe en la base de datos ' });
                 }
             })
         } else {
