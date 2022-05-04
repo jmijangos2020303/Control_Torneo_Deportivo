@@ -3,6 +3,38 @@ const bcrypt = require("bcrypt-nodejs");
 const jwt = require("jwt-simple");
 const jwt2 = require('../services/jwt');
 
+function mainStart(req, res) {
+
+    let usuarioModelo = new Usuario();
+
+    usuarioModelo.usuario = 'ADMIN'
+    usuarioModelo.password = '123456',
+    usuarioModelo.email = 'ADMIN',
+    usuarioModelo.rol = 'ADMIN'
+
+    Usuario.find({$or:[
+        {usuario: usuarioModelo.usuario}
+    ]}).exec((err, buscarUsuario)=>{
+        if(err) return console.log("ERROR en la peticion")
+        
+        if(buscarUsuario && buscarUsuario.length>=1){
+            console.log("Usuario Admin creado con anterioridad")
+        }else{
+            bcrypt.hash(usuarioModelo.password,null,null, (err, passCrypt)=>{
+                usuarioModelo.password = passCrypt;
+            })
+
+            usuarioModelo.save((err,usuarioGuardado)=>{
+                if(err) return console.log( "ERROR al crear el usuario Admin" )
+
+                if(usuarioGuardado){
+                    console.log( "Usuario Admin Creado" )
+                }
+            })
+        }
+    })
+}
+
 
 //Función de registro
 function registro(req, res) {
@@ -192,5 +224,6 @@ module.exports = {
     obtenerTodosLosUsuariosClientes,
     obtenerTodosLosUsuarios,
     obtenerIdentidad,
-    convertirAdmin
+    convertirAdmin,
+    mainStart
 }

@@ -4,18 +4,11 @@ var autentication = require('../middlewares/authenticated');
 
 var api = express.Router();
 
-api.post('/crearLiga', autentication.ensureAuth, ligaController.createLiga);
-api.get('/mostrarLigas', ligaController.mostrarLigas);
-api.get('/ligasUser/:nombre', autentication.ensureAuth, ligaController.ligasForUser)
-api.get('/misLigas', autentication.ensureAuth, ligaController.misLigas)
-api.get('/mostrarLigaID/:idLiga', ligaController.mostrarLigaID);
-api.get('/equiposLiga/:idLiga', ligaController.equiposLiga)
-api.get('/tablaLiga/:idLiga', ligaController.tablaLiga)
-api.put('/editarLiga/:idLiga', ligaController.editarLiga);
-api.delete('/eliminarLiga/:idLiga', ligaController.eliminarLiga);
-//Reportes
-api.get('/reporteEquiposLiga/:idLiga', ligaController.generarPDF)
-api.get('/reporteTablaLiga/:idLiga', ligaController.generadorTablaLiga)
+api.post('/crearLiga/:id', autentication.ensureAuth, ligaController.createTorneo);
+api.put('/setTorneo/:id', autentication.ensureAuth, ligaController.setTorneo);
+api.put('/:idU/updateTorneo/:idT', autentication.ensureAuth, ligaController.updateTorneo);
+api.delete('/:idU/removeTorneo/:idT', autentication.ensureAuth, ligaController.removeTorneo);
+api.get('/getTorneo', autentication.ensureAuth, ligaController.getTorneo);
 
 
 module.exports = api;
