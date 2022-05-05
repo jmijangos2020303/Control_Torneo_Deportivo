@@ -8,7 +8,7 @@ var UsuarioSchema = Schema({
     password: String,
     rol: String,
     liga: [
-        {type: mongoose.ObjectId, ref: 'liga'},
+        {type: Schema.Types.String, ref: 'liga'}
     ],
 }, {collection: 'usuario'})
 

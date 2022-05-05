@@ -3,8 +3,7 @@ var Schema = mongoose.Schema;
 
 var EquipoSchema = Schema({
     nombre: String,
-    imagen: String,
-    liga: {type: Schema.Types.String, ref: 'liga'}
+    image: String,
 });
 
 module.exports = mongoose.model('equipo', EquipoSchema); 

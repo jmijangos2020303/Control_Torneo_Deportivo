@@ -25,7 +25,7 @@ function setTorneo(req, res) {
                     if (err) {
                         return res.status(500).send({ message: 'Error general al guardar' })
                     } else if (contactSaved) {
-                        Usuario.findByIdAndUpdate(userId, { $push: { torneo: contactSaved._id } }, { new: true }, (err, contactPush) => {
+                        Usuario.findByIdAndUpdate(userId, {$push: { liga: params.nombreL} }, { new: true }, (err, contactPush) => {
                             if (err) {
                                 return res.status(500).send({ message: 'Error general al agergar contacto' })
                             } else if (contactPush) {
@@ -33,7 +33,7 @@ function setTorneo(req, res) {
                             } else {
                                 return res.status(500).send({ message: 'Error al agregar contacto' })
                             }
-                        }).populate('liga')
+                        })
                     } else {
                         return res.status(404).send({ message: 'No se guardó el contacto' })
                     }
@@ -67,7 +67,7 @@ function createTorneo(req, res) {
                             if (err) {
                                 return res.status(500).send({ message: 'Error general al guardar' })
                             } else if (torneoSaved) {
-                                Usuario.findByIdAndUpdate(userId, { $push: { liga: torneoSaved._id } }, { new: true }, (err, torneoPush) => {
+                                Usuario.findByIdAndUpdate(userId, { $push: { liga: params.nombreL } }, { new: true }, (err, torneoPush) => {
                                     if (err) {
                                         return res.status(500).send({ message: 'Error general aqui2 ' });
                                     } else if (torneoPush) {
@@ -75,7 +75,7 @@ function createTorneo(req, res) {
                                     } else {
                                         return res.status(500).send({ message: 'Error al crear una Liga' });
                                     }
-                                }).populate('liga');
+                                })
                             } else {
                                 return res.status(404).send({ message: 'No se creo el torneo' })
                             }
@@ -103,7 +103,7 @@ function updateTorneo(req, res) {
             if (err) {
                 return res.status(500).send({ message: 'Error general al buscar' });
             } else if (ligaFind) {
-                Usuario.findOne({ _id: userId }, (err, userFind) => {
+                Usuario.findOne({ _id: userId}, (err, userFind) => {
                     if (err) {
                         return res.status(500).send({ message: 'Error general en la busqueda de usuario' });
                     } else if (userFind) {
@@ -112,10 +112,13 @@ function updateTorneo(req, res) {
                                 return res.status(500).send({ message: 'Error general en la actualización' });
                             } else if (ligaUpdated) {
                                 return res.send({ message: 'Contacto actualizado', ligaUpdated });
+                                
                             } else {
                                 return res.status(404).send({ message: 'Contacto no actualizado' });
                             }
+                            
                         }).populate('equipo')
+                        
                     } else {
                         return res.status(404).send({ message: 'Usuario no encontrado' })
                     }
@@ -134,15 +137,12 @@ function updateTorneo(req, res) {
 function removeTorneo(req, res) {
     let userId = req.params.idU;
     let torneoId = req.params.idT;
+    let nombreL = req.body; 
 
     if (userId != req.user.sub) {
         return res.status(500).send({ message: 'No tienes permisos para realizar esta acción' });
     } else {
-        Usuario.findOneAndUpdate({_id: userId, liga: torneoId},
-            {$pull:{liga: torneoId}}, {new:true}, (err, contactPull)=>{
-                if(err){
-                    return res.status(500).send({message: 'Error general'});
-                }else if(contactPull){
+        
         Liga.findByIdAndRemove(torneoId, (err, contactRemoved) => {
             if (err) {
                 return res.status(500).send({ message: 'Error general al eliminar contacto' });
@@ -153,16 +153,13 @@ function removeTorneo(req, res) {
             }
         })
 
-    }else{
-        return res.status(500).send({message: 'No se pudo eliminar el contacto del usuario'});
     }
-}).populate('torneo')
     }
-}
+
 
 
 function getTorneo(req, res) {
-    Torneo.find({}).populate('team').exec((err, torneo) => {
+    Liga.find({}).populate('team').exec((err, torneo) => {
         if (err) {
             return res.status(500).send({ message: 'Error general en el servidor' })
         } else if (torneo) {

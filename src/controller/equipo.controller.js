@@ -4,58 +4,52 @@ const LigaE = require("../models/liga.model");
 
 
 //crear equipo
-async function createEquipo(req, res) {
-    var modeloEquipo = new Equipo();
-    var modeloTabla = new Tabla();
+function createEquipo(req, res) {
+    var torneoId = req.params.id;
+    var equipo = new Equipo();
     var params = req.body;
-    var ligaID = req.params.idLiga;
 
-    if (catEncontrado.length >= 10) {
-        return res.status(500).send({ mensaje: "La liga ha alcanzado el total de equipos" })
-    } else {
-        if (params.nombre) {
-            modeloEquipo.nombre = params.nombre;
-            modeloEquipo.imagen = params.imagen;
-            modeloEquipo.liga = ligaID;
+    if(params.nombre){
+        Equipo.findOne({nombre: params.nombre},(err, equipoFind) => {
+            if(err){
+                return res.status(500).send({message: 'Error general en el servidor'});
+                }else if(equipoFind){
+                    return res.status(500).send({message: 'Nombre ya en uso!'});
+            }else{
+                LigaE.findById(torneoId, (err, ligaFind) => {
+                    console.log(ligaFind)
+                    if(err){
+                        return res.status(500).send({message: 'Error generall'})
+                    }else if(ligaFind){
+                        equipo.nombre = params.nombre;
+                        equipo.save((err, teamSaved)=>{
 
-            Equipo.find({ nombre : params.nombre }, (err, catEncontrado) => {
-                if (err) {
-                    return res.status(500).send({ mensaje: "Error en la petición" })
-                } else if (catEncontrado.length == 0) {
-                    modeloEquipo.save((err, equipoSave) => {
-                        if (err) {
-                            return res.status(500).send({ mensaje: "Error en la petición" })
-                        } else if (!equipoSave) {
-                            return res.status(500).send({ mensaje: "No se ha podido almacenar el equipo" })
-                        } else {
-                            modeloTabla.equipo = equipoSave.nombre;
-                            modeloTabla.puntaje = 0;
-                            modeloTabla.partidos_jugados = 0;
-                            modeloTabla.partidos_ganados = 0;
-                            modeloTabla.partidos_empatados = 0;
-                            modeloTabla.partidos_perdidos = 0;
-                            modeloTabla.goles_a_favor = 0;
-                            modeloTabla.goles_en_contra = 0;
-                            modeloTabla.save((err, tablaSave) => {
-                                if (err) {
-                                    return res.status(500).send({ mensaje: "Error en la petición" })
-                                } else if (!tablaSave) {
-                                    return res.status(500).send({ mensaje: "No se ha podido agregar el equipo a la tabla" })
-                                } else {
-                                    console.log(tablaSave);
-                                }
-                            });
-                            return res.status(200).send({ equipoSave })
-                        }
-                    })} else {
-                        return res.status(500)
-                        .send({ mensaje: 'Este Equipo ya existe en la base de datos ' });
-                }
-            })
-        } else {
-            return res.status(500).send({ mensaje: "No ha completado todos los parámetros" })
-        }
+                            if(err){
+                                return res.status(500).send({message: 'Error general al guardar'})
+                            }else if(teamSaved){
+                                LigaE.findByIdAndUpdate(torneoId, {$push:{equipos: params.nombre}}, {new: true}, (err, teamPush)=>{
+                                    if(err){
+                                        return res.status(500).send({message: 'Error general'})
+                                    }else if(teamPush){
+                                        return res.send({message: 'Creada Exitosamente', teamPush});
+                                    }else{
+                                        return res.status(500).send({message: 'Error al crear el grupo'});
+                                    }
+                                })
+                            }else{
+                                return res.status(404).send({message: 'No se creo el grupo'})
+                            }
+                        })
+                    }else{
+                        return res.status(404).send({message: 'la liga al que deseas agregar el grupo no existe.'})
+                     }
+                 })   
+            }
+        })
+    }else{
+        return res.send({message: 'Por favor ingresa los datos obligatorios'});
     }
+
 }
 
 //mostrar equipos

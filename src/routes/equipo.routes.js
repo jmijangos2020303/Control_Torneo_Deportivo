@@ -3,7 +3,8 @@ const equipoController = require('../controller/equipo.controller')
 
 var api = express.Router();
 
-api.post('/crearEquipo/:idLiga', equipoController.createEquipo);
+api.post('/crearEquipo/:id', equipoController.createEquipo);
+
 api.get('/mostrarEquipos', equipoController.mostrarEquipos);
 api.get('/equipoId/:idEquipo', equipoController.equipoId);
 api.get("/equiposPorLiga/:idLiga", equipoController.equiposPorLiga);
