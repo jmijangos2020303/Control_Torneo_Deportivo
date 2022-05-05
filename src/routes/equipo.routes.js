@@ -4,11 +4,13 @@ const equipoController = require('../controller/equipo.controller')
 var api = express.Router();
 
 api.post('/crearEquipo/:id', equipoController.createEquipo);
+api.put('/:idG/updateTeam/:idt', equipoController.editarEquipo);
+api.delete('/:idG/removeTeam/:idt', equipoController.eliminarEquipo);
+api.get('/getTeams', equipoController.getTeams);
 
-api.get('/mostrarEquipos', equipoController.mostrarEquipos);
-api.get('/equipoId/:idEquipo', equipoController.equipoId);
-api.get("/equiposPorLiga/:idLiga", equipoController.equiposPorLiga);
-api.put('/editarEquipo/:idEquipo', equipoController.editarEquipo);
-api.delete('/eliminarEquipo/:idEquipo', equipoController.eliminarEquipo)
+api.post('/createPartido/:id', equipoController.createPartido);
+api.put('/:idT/finalizacionPartido/:idP', equipoController.finalizacionPartido);
+api.get('/getPartidos', equipoController.getPartidos);
+api.put('/:idT/SetGoals/:idP', equipoController.SetGoals);
 
 module.exports = api;

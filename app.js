@@ -6,7 +6,6 @@ const app = express();
 const usuarioRoutes = require('./src/routes/usuario.routes');
 const ligaRoutes = require('./src/routes/liga.routes');
 const equipoRoutes = require('./src/routes/equipo.routes');
-const partidosRoutes = require('./src/routes/partidos.routes');
 
 
 
@@ -18,6 +17,6 @@ app.use(express.json());
 app.use(cors());
 
 // CARGA DE RUTAS localhost:3000/api
-app.use('/api', usuarioRoutes, ligaRoutes, equipoRoutes, partidosRoutes);
+app.use('/api', usuarioRoutes, ligaRoutes, equipoRoutes);
 
 module.exports = app;
