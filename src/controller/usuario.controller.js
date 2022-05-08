@@ -196,10 +196,7 @@ function obtenerUsuario(req, res) {
     })
 }
 
-function obtenerIdentidad(req, res) {
-    let x = jwt.decode(req.headers["authorization"], "Torneo_Deportivo");
-    res.json(x)
-}
+
 
 function obtenerTodosLosUsuarios(req, res) {
     Usuario.find().sort({ rol: 1 })
@@ -223,7 +220,6 @@ module.exports = {
     obtenerUsuario,
     obtenerTodosLosUsuariosClientes,
     obtenerTodosLosUsuarios,
-    obtenerIdentidad,
     convertirAdmin,
     mainStart
 }

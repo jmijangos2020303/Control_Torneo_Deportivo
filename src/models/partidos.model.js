@@ -12,7 +12,7 @@ var PartidosSchema = Schema({
       teamTwo:{
         type: String,
     },
-    goalsTeamTwo:Number
+    goalsTeamTwo:Number,
     });
 
 module.exports = mongoose.model('partido', PartidosSchema)

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var TablaSchema = Schema({
-    equipo: String,
+    equipo: {type: Schema.Types.ObjectId, ref: 'equipo'},
     puntaje: Number,
     partidos_jugados: Number,
     partidos_ganados: Number,

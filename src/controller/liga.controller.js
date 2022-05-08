@@ -1,8 +1,7 @@
 const Liga = require("../models/liga.model");
 const Equipo = require("../models/equipo.model")
 const Tabla = require("../models/tabla.model");
-const pdfGenerador = require('../utils/pdf/pdf.generator')
-const pdfTablaLiga = require('../utils/pdf/reporteTablaLiga.generator')
+const pdfGenerador = require('../controller/pdf.generator')
 const Usuario = require("../models/usuario.model")
 
 
@@ -171,10 +170,28 @@ function getTorneo(req, res) {
 }
 
 
+//Generar reporte de equipos por liga
+async function generarPDF(req, res) {
+    const idLiga = req.params.idLiga;
+    const equipos = Equipo.find({ liga: idLiga }, (err, datos) => {
+        console.log(datos)
+        if (err) {
+            return res.status(500).send({ mensaje: "Error en la petición" })
+        } else if (datos && datos.length >= 1) {
+            console.log("Equipos Encontrados");
+        } else {
+            return res.status(500).send({ mensaje: "La liga no contiene equipos" })
+        }
+    }).populate("liga")
+    pdfGenerador.generarPDF(equipos).then(datos => res.download(datos.filename))
+}
+
+
 module.exports = {
     createTorneo,
     updateTorneo,
     removeTorneo,
     getTorneo,
-    setTorneo
+    setTorneo,
+    generarPDF
 }

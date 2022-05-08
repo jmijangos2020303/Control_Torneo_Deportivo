@@ -14,6 +14,5 @@ api.delete("/eliminarUsuario/:idUsuario", usuarioController.eliminarUsuario);
 api.get('/obtenerUsuario/:idUsuario', usuarioController.obtenerUsuario);
 api.get("/obtenerUsuarios", usuarioController.obtenerTodosLosUsuarios);
 api.get("/obtenerUsuariosClientes", usuarioController.obtenerTodosLosUsuariosClientes);
-api.get("/obtenerIdentidad", usuarioController.obtenerIdentidad);
 
 module.exports = api;
